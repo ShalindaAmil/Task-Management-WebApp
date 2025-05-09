@@ -20,11 +20,12 @@ export const AuthProvider = ({children}) => {
         };
         checkAuth();
     },[]);
-    const login=()=>{
-        windows.open(${process.env.REACT_APP_BACKEND_URL}/auth/google,'_self');
+    const login = () => {
+        window.open(`${process.env.REACT_APP_BACKEND_URL}/auth/google`, '_self');
     };
-    const logout=()=>{
-        window.open(${process.env.REACT_APP_BACKEND_URL}/auth/logout,'_self');
+    
+    const logout = () => {
+        window.open(`${process.env.REACT_APP_BACKEND_URL}/auth/logout`, '_self');
     };
 
     returun (
