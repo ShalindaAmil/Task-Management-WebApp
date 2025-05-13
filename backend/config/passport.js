@@ -1,15 +1,15 @@
 
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('../models/User');
+import passport, { serializeUser, deserializeUser, use } from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import User, { findById, findOne, create } from '../models/User';
 
-passport.serializeUser((user, done) => {
+serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id, done) => {
+deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id);
+    const user = await findById(id);
     done(null, user);
   } catch (err) {
     done(err, null);
@@ -31,9 +31,9 @@ passport.use(
         if (!user) {
           user = await User.create({
             googleId: profile.id,
-            email: profile.emails[0].value,
-            name: profile.displayName,
-            avatar: profile.photos[0].value
+            email: profile.emails?.[0]?.value || `${profile.id}@google.com`,
+            name: profile.displayName || 'Google User',
+            avatar: profile.photos?.[0]?.value || ''
           });
         }
 
@@ -45,4 +45,4 @@ passport.use(
   )
 );
 
-module.exports = passport;
+export default passport;

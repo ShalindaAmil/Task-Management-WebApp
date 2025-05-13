@@ -20,8 +20,7 @@ export default function Navbar() {
               <span className="text-gray-600">Hello, {user.name}</span>
               <button
                 onClick={logout}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded"
-              >
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded">
                 Logout
               </button>
             </>

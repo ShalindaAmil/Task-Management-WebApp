@@ -1,11 +1,12 @@
 // backend/models/User.js
-const mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   googleId: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   avatar: String
 });
-
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+//export default model('User', userSchema);
+export default User;

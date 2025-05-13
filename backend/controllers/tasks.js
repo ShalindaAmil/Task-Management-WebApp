@@ -1,23 +1,23 @@
 
-const Task = require('../models/Task');
+import Task from '../models/Task.js';
 
-exports.getTasks = async (req, res) => {
+export async function getTasks(req, res) {
   try {
     const { status } = req.query;
     const filter = { createdBy: req.user._id };
 
     if (status) filter.status = status;
 
-    const tasks = await Task.find(filter).sort({ deadline: 1 });
+    const tasks = await find(filter).sort({ deadline: 1 });
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-};
+}
 
-exports.getTask = async (req, res) => {
+export async function getTask(req, res) {
   try {
-    const task = await Task.findOne({
+    const task = await findOne({
       _id: req.params.id,
       createdBy: req.user._id
     });
@@ -28,9 +28,9 @@ exports.getTask = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-};
+}
 
-exports.createTask = async (req, res) => {
+export async function createTask(req, res) {
   try {
     const { title, description, deadline, assignedTo, status } = req.body;
 
@@ -48,11 +48,11 @@ exports.createTask = async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
-};
+}
 
-exports.updateTask = async (req, res) => {
+export async function updateTask(req, res) {
   try {
-    const task = await Task.findOneAndUpdate(
+    const task = await findOneAndUpdate(
       { _id: req.params.id, createdBy: req.user._id },
       req.body,
       { new: true, runValidators: true }
@@ -64,11 +64,11 @@ exports.updateTask = async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
-};
+}
 
-exports.deleteTask = async (req, res) => {
+export async function deleteTask(req, res) {
   try {
-    const task = await Task.findOneAndDelete({
+    const task = await findOneAndDelete({
       _id: req.params.id,
       createdBy: req.user._id
     });
@@ -79,4 +79,4 @@ exports.deleteTask = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-};
+}

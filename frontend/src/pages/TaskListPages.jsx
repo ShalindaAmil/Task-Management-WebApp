@@ -1,19 +1,29 @@
 import{useState,useEffect}from 'react';
-import {Link, useActionData} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import{FiEdit,FiTrash2,FiPlus}from 'react-icons/fi';
 import jsPDF from 'jspdf';
 import "jspdf-autotable";
+import { useAuth } from '../contexts/authcontext';
 
 export default function TaskListPage(){
     const[tasks,setTasks]=useState([]);
     const[loading,setLoading]=useState(true);
     const[filter,setFilter]=useState('all');
+    const [error, setError] = useState('');
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }});
 
     useEffect(()=>{
         const fetchTasks=async()=>{
             try {
-                const {data}=await axios.get('./api/tasks',{withCredentials:true});
+                const {data}=await axios.get('./api/tasks',{withCredentials:true, params: { status: filter !== 'all' ? filter : undefined }});
                 setTasks(data);
             } catch (error) {
                 console.error('Failed to fetch tasks');
@@ -22,14 +32,14 @@ export default function TaskListPage(){
             }
         };
         fetchTasks();
-    },[]);
+    },[user, navigate, filter]);
 
     const deleteTask=async(id)=>{
         try {
                 await axios.delete(`./api/tasks/${id}`,{withCredentials:true});
                 setTasks(tasks.filter(task=>task._id!==id));
             } catch (error) {
-                console.error('Failed to delete task');
+                console.log('Failed to delete task');
             } 
     };
 
@@ -37,7 +47,7 @@ export default function TaskListPage(){
         const doc=new jsPDF();
         doc.text('Task Report',14,15);
 
-        const filteredTasks=filter==='all' ? tasks : tasks.filter(task=>task.status===filter);
+        //const filteredTasks=filter==='all' ? tasks : tasks.filter(task=>task.status===filter);
         const tableData=filteredTasks.map(task=>[task.title,task.status,new Date(task.deadline).toLocaleDateString(),task.assignedTo]);
 
         doc.autoTable({
@@ -50,6 +60,8 @@ export default function TaskListPage(){
 
     const filteredTasks=filter==='all' ? tasks : tasks.filter(task=>task.status===filter);
     if (loading)return <div className="text-center py-10">Loading tasks...</div>;
+    if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
+
     return(
         <div>
             <div className="flex justify-between items-center mb-6">
@@ -272,4 +284,4 @@ export default function TaskListPage(){
 //       </div>
 //     </div>
 //   );
-// }
+// }//

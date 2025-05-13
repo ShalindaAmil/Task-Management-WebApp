@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const checkAuth=async()=>{
@@ -13,6 +14,7 @@ export const AuthProvider = ({children}) => {
                 const {data}=await axios.get('/auth/current_user',{withCredentials:true});
                 setUser(data);
             } catch (err) {
+                setError(err.response?.data?.message || 'Authentication failed');
                 setUser(null);
             }finally{
                 setLoading(false);
@@ -20,16 +22,24 @@ export const AuthProvider = ({children}) => {
         };
         checkAuth();
     },[]);
+
     const login = () => {
         window.open(`${process.env.REACT_APP_BACKEND_URL}/auth/google`, '_self');
     };
     
-    const logout = () => {
-        window.open(`${process.env.REACT_APP_BACKEND_URL}/auth/logout`, '_self');
-    };
+    const logout = async () => {
+    try {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/logout`, { 
+        withCredentials: true 
+      });
+      setUser(null);
+    } catch (err) {
+      setError('Logout failed');
+    }
+  };
 
     return (
-        <AuthContext.Provider value={{user,loading,login,logout}}>
+        <AuthContext.Provider value={{user,loading,login,logout,error}}>
             {children}
         </AuthContext.Provider>
     );

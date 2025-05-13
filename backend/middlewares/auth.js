@@ -1,10 +1,12 @@
 
-exports.isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) return next();
-    res.status(401).json({ message: 'Unauthorized' });
-  };
+export const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: 'Unauthorized' });
+};
   
-  exports.validateTaskInput = (req, res, next) => {
+  export function   validateTaskInput(req, res, next) {
     const { title, deadline } = req.body;
   
     if (!title || !deadline) {
@@ -16,4 +18,5 @@ exports.isAuthenticated = (req, res, next) => {
     }
   
     next();
-  };
+  }
+export default isAuthenticated;

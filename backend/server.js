@@ -1,12 +1,17 @@
 
 require('dotenv').config();
-const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
-const cors = require('cors');
-const connectDB = require('./config/db');
-const authRoutes = require('./routes/auth');
-const taskRoutes = require('./routes/tasks');
+import express, { json } from 'express';
+import session from 'express-session';
+import { initialize, session as _session } from 'passport';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import authRoutes from './routes/auth.js';
+import taskRoutes from './routes/tasks.js';
+import passport from 'passport'; 
+import dotenv from 'dotenv'; 
+
+passport.initialize();
+passport.session();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,9 +19,11 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL,
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
+app.use(json());
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -27,8 +34,8 @@ app.use(session({
   }
 }));
 
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(initialize());
+app.use(_session());
 
 // Database connection
 connectDB();
